@@ -1,6 +1,6 @@
 # Kengai
 
-![Kengai](jcambien.github.com/kengai/kengai.png)
+![Kengai](http://jcambien.github.com/kengai/kengai.png)
 
 Kengai is a simple but powerful configuration tool for your PHP applications.
 
