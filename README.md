@@ -3,6 +3,8 @@
 Kengai is a simple but powerful configuration tool for your PHP applications.
 
 This is a work in progress, do NOT use it in production environment.
+Also, please note that documentation is not done but in progress.
+
 Anybody is welcome to help and contribute to this project.
 
 
@@ -17,25 +19,22 @@ The idea is simple :
 
 ## Basics
 
-Here's a example of a basic use :
+Here is a example of a basic use case:
 
 ```php
-<code>
 <?php
 
- use Kengai\Manager as Kengai;
- use Kengai\SourceReader\YAML;
+use Kengai\Manager as Kengai;
+use Kengai\SourceReader\YAML;
  
- // Create a Kengai manager instance
- $kengai = new Kengai();
+// Create a Kengai manager instance
+$kengai = new Kengai();
  
- // Import your configuration files
- $kengai->add(new YAML('myconfig.yml', 'myconfig'));
+// Import your configuration files
+$kengai->add(new YAML('myconfig.yml', 'myconfig'));
  
- // Example of JSON support
- $kengai->add(new YAML('composer.json', 'composer'));
+// Example of JSON support
+$kengai->add(new YAML('composer.json', 'composer'));
  
- // Fetch data
- $kengai->fetch();
- 
-</code>
+// Fetch data
+$kengai->fetch();
