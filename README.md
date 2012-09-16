@@ -36,7 +36,7 @@ $kengai = new Kengai();
 $kengai->add(new YAML('myconfig.yml', 'myconfig'));
  
 // Example of JSON support
-$kengai->add(new YAML('composer.json', 'composer'));
+$kengai->add(new JSON('composer.json', 'composer'));
  
 // Fetch data
 $kengai->fetch();
