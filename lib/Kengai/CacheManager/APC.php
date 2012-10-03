@@ -19,7 +19,7 @@
     * @param mixed $cacheFile
     * @return void
     */
-   public function __construct($dataTreeIdentifier='cfgman_data', $keysListIdentifier='cfgman_keys') {
+   public function __construct($dataTreeIdentifier='kengai_apc_data', $keysListIdentifier='kengai_apc_keys') {
 
      if(!extension_loaded('apc'))
        throw new Exception('APC extension is not available');
