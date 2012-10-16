@@ -14,9 +14,9 @@
     * @param mixed $cacheFile
     * @return void
     */
-   public function __construct($cacheFile) {
+   public function __construct($cacheDir) {
 
-     $this->cacheFile = $cacheFile;
+     $this->cacheDir = $cacheDir;
 
    }
 
@@ -26,14 +26,14 @@
     * @access public
     * @return void
     */
-   public function restore(&$data, &$keys) {
+   public function restore(Manager $manager) {
 
-     if(!$this->validate())
-       return false;
+     if(!$this->validate($manager))
+       throw new \Exception("Unable to restore configuration cache file : validation failed");
 
-     $array = include($this->cacheFile);
-
-     return ($data=$array['data'] && $keys=$array['keys']);
+     $array = include($this->getCacheFilename($manager));
+     
+     return array('data'=>$array['data'], 'keys'=>$array['keys']);
 
    }
 
@@ -44,9 +44,17 @@
     * @param Tree $tree
     * @return void
     */
-   public function write($data, $keys) {
+   public function write(Manager $manager) {
 
-     return (file_put_contents($this->cacheFile, "<?php return ".var_export(array('data'=>$data, 'keys'=>$keys), true)."; ?>") === false) ? false : true;
+     $cacheFile = $this->getCacheFilename($manager);
+
+     // Write source to cache file
+     $write = file_put_contents($cacheFile, "<?php return ".var_export(array('data'=>$manager->getData(), 'keys'=>$manager->getKeys()), true).";");
+
+     // Minifying
+     file_put_contents($cacheFile, php_strip_whitespace($cacheFile));
+     
+     return ($write !== false);
 
    }
 
@@ -56,9 +64,9 @@
     * @access public
     * @return void
     */
-   public function exists() {
+   public function exists(Manager $manager) {
 
-     return is_file($this->cacheFile);
+     return is_file($this->getCacheFilename($manager));
 
    }
 
@@ -68,9 +76,9 @@
     * @access public
     * @return void
     */
-   public function clean() {
+   public function clean(Manager $manager) {
 
-     return $this->exists() ? @unlink($this->cacheFile) : false;
+     return $this->exists($manager) ? (@unlink($this->getCacheFilename($manager)) === true) : false;
 
    }
 
@@ -80,10 +88,23 @@
     * @access public
     * @return void
     */
-   public function validate() {
+   public function validate(Manager $manager) {
 
-     return (!$this->exists() || filesize($this->cacheFile)==0) ? false : true;
+     return ($this->exists($manager) && filesize($this->getCacheFilename($manager))>0) ? true : false;
 
+   }
+
+   /**
+    * getCacheFilename function.
+    * 
+    * @access protected
+    * @param mixed $manager
+    * @return void
+    */
+   protected function getCacheFilename($manager) {
+     
+     return $this->cacheDir.'/'.$manager->getCacheUniqueKey().".php";
+     
    }
 
  }

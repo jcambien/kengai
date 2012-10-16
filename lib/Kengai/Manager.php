@@ -40,13 +40,6 @@
      $this->cache = $cache;
      $this->checkSources = ($checkSources === true);
 
-     // Restoring from cache
-     if($this->cache instanceof CacheManagerInterface && $this->cache->validate()) {
-       if(!$this->cache->restore($this->data, $this->keys)) {
-         throw new \Exception('Error when recovering configuration from cache');
-       }
-     }
-
    }
 
    /**
@@ -72,6 +65,14 @@
    public function fetch() {
 
      $update = false;
+     
+     if($this->hasCache() && $this->cache->exists($this)) {
+       $array = $this->cache->restore($this);
+       $this->data = $array['data'];
+       $this->keys = $array['keys'];
+     } else {
+       $update = true;
+     }
 
      if($this->checkSources===true || !$this->hasCache()) {
        foreach($this->sources as $key=>$source) {
@@ -87,11 +88,12 @@
        }
      }
 
+     // Update data if needed
      if($update===true) {
        $this->keys = array();
        $this->data = array();
-       foreach($this->sources as $source) {
-         if($source->validate()) {
+       foreach($this->sources as $key=>$source) {
+         if($source->validate($this)) {
            $this->eventDispatcher->dispatch(Events::RESOURCE_REFRESHING, new Event\ResourceEvent($source));
            $this->update($source->getNamespace(), $source->fetch());
            $this->keys[$key] = time();
@@ -101,7 +103,7 @@
        }
        if($this->hasCache()) {
          $this->eventDispatcher->dispatch(Events::CACHE_WRITING, new Event\CacheEvent($this->cache));
-         if($this->cache->write($this->data, $this->keys)) {
+         if($this->cache->write($this)) {
            $this->eventDispatcher->dispatch(Events::CACHE_WRITTEN, new Event\CacheEvent($this->cache));
          } else {
            throw new Exception\CacheException('Unable to write cache');
@@ -166,6 +168,42 @@
    }
    
    /**
+    * getData function.
+    * 
+    * @access public
+    * @return void
+    */
+   public function getData() {
+     
+     return $this->data;
+     
+   }
+   
+   /**
+    * getKeys function.
+    * 
+    * @access public
+    * @return void
+    */
+   public function getKeys() {
+     
+     return $this->keys;
+     
+   }
+   
+   /**
+    * getCacheUniqueKey function.
+    * 
+    * @access public
+    * @return void
+    */
+   public function getCacheUniqueKey() {
+     
+     return sha1(implode('-', array_keys($this->sources)));
+     
+   }
+   
+   /**
     * addEvent function.
     *
     * @access public
@@ -202,9 +240,15 @@
 
    }
 
+   /**
+    * resetCache function.
+    * 
+    * @access public
+    * @return void
+    */
    public function resetCache() {
 
-     return ($this->hasCache() ? $this->cache->clean() : false);
+     return ($this->hasCache() ? $this->cache->clean($this) : false);
 
    }
 
