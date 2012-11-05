@@ -267,7 +267,7 @@
        if(!is_array($value))
          throw new \Exception("You must provide an array when inserting data at tree root");
 
-       $this->data = array_merge($this->data, $value);
+       $this->data = array_merge_recursive($this->data, $value);
 
      } else {
 
@@ -311,6 +311,15 @@
          }
          else {
            return null;
+         }
+       } else {
+         if($endReached) {
+           // End of namespace search : he already exists so we merge new values with existing values
+           if(is_array($current[$name]) && !empty($insert)) {
+             $current[$name] = array_merge_recursive($current[$name], $insert);
+           } else if(!empty($insert)) {
+             $current[$name] = $insert;
+           }
          }
        }
 
