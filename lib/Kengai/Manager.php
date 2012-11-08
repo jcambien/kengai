@@ -95,7 +95,10 @@
        foreach($this->sources as $key=>$source) {
          if($source->validate($this)) {
            $this->eventDispatcher->dispatch(Events::RESOURCE_REFRESHING, new Event\ResourceEvent($source));
-           $this->update($source->getNamespace(), $source->fetch());
+           $node = $source->fetch();
+           if(!empty($node)){
+             $this->update($source->getNamespace(), $node);
+           }
            $this->keys[$key] = time();
          } else {
            throw new Exception\ResourceUnreachableException($source);
@@ -263,19 +266,18 @@
    protected function update($node, $value) {
 
      if(empty($node)) {
-
+     
        if(!is_array($value))
-         throw new \Exception("You must provide an array when inserting data at tree root");
+         throw new \Exception("You must provide an array when inserting data on tree root");
 
-       $this->data = array_merge_recursive($this->data, $value);
+       $this->data = $this->mergeArrays($this->data, $value);
 
      } else {
-
-       $reference = $this->resolveNamespace($node, true, $value);
-
+     
+       $this->resolveNamespace($node, true, $value);
+       
      }
 
-     //var_dump($this->data);
      return ($this->modified = true);
 
    }
@@ -302,7 +304,9 @@
        $endReached = ($depth === ($maxDepth-1));
        $currentName .= ($depth>0 ? '.' : '').$name;
 
-       if(!isset($current[$name])) {
+       // new node
+       if(!isset($current[$name])) 
+       {
          if($create===true) {
            $current[$name] = ($endReached) ? $insert : array();
          }
@@ -312,14 +316,23 @@
          else {
            return null;
          }
-       } else {
+       } 
+       
+       // existing node
+       else 
+       {
          if($endReached) {
-           // End of namespace search : he already exists so we merge new values with existing values
-           if(is_array($current[$name]) && !empty($insert)) {
-             $current[$name] = array_merge_recursive($current[$name], $insert);
-           } else if(!empty($insert)) {
-             $current[$name] = $insert;
-           }
+           // updating value
+           if(!empty($insert))
+           {
+             // End of namespace search : he already exists so we merge new values with existing values
+             if(is_array($current[$name])) {
+               $current[$name] = $this->mergeArrays($current[$name], $insert);
+             } else {
+               $current[$name] = $insert;
+             }
+           } 
+
          }
        }
 
@@ -330,9 +343,23 @@
        }
 
      }
-
+     
      return $current;
 
+   }
+
+   /**
+    * mergeArrays function.
+    * 
+    * @access protected
+    * @param mixed $arr1
+    * @param mixed $arr2
+    * @return void
+    */
+   protected function mergeArrays($arr1, $arr2) {
+
+     return array_replace_recursive($arr1, $arr2);
+     
    }
 
  }
