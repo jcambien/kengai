@@ -30,7 +30,7 @@
 
      // Event dispatcher
      $this->eventDispatcher = new EventDispatcher();
-     
+
      // Cached parts
      $this->data = array();
      $this->keys = array();
@@ -65,7 +65,7 @@
    public function fetch() {
 
      $update = false;
-     
+
      if($this->hasCache() && $this->cache->exists($this)) {
        $array = $this->cache->restore($this);
        $this->data = $array['data'];
@@ -130,7 +130,7 @@
 
      if(!$this->fetched)
        throw new \Exception("Trying to read configuration tree before fetching data");
-     
+
      if(!is_null($default)) {
        try {
          return $this->resolveNamespace($node);
@@ -153,11 +153,11 @@
 
      if(!$this->fetched)
        throw new \Exception("Trying to read configuration tree before fetching data");
-     
+
      return $this->data;
 
    }
-   
+
    /**
     * getEventDispatcher function.
     *
@@ -165,47 +165,47 @@
     * @return object
     */
    public function getEventDispatcher() {
-   
+
      return $this->eventDispatcher;
-   
+
    }
-   
+
    /**
     * getData function.
-    * 
+    *
     * @access public
     * @return void
     */
    public function getData() {
-     
+
      return $this->data;
-     
+
    }
-   
+
    /**
     * getKeys function.
-    * 
+    *
     * @access public
     * @return void
     */
    public function getKeys() {
-     
+
      return $this->keys;
-     
+
    }
-   
+
    /**
     * getCacheUniqueKey function.
-    * 
+    *
     * @access public
     * @return void
     */
    public function getCacheUniqueKey() {
-     
+
      return sha1(implode('-', array_keys($this->sources)));
-     
+
    }
-   
+
    /**
     * addEvent function.
     *
@@ -213,9 +213,9 @@
     * @return boolean
     */
    public function addEvent($event, $callback) {
-     
+
      return $this->eventDispatcher->addListener($event, $callback);
-     
+
    }
 
    /**
@@ -228,6 +228,16 @@
    public function setSourceChecking($bool) {
 
      $this->checkSources = ($bool === true);
+
+   }
+
+   /**
+    * [setCacheManager description]
+    * @param CacheManagerInterface $cache [description]
+    */
+   public function setCacheManager(CacheManagerInterface $cache) {
+
+     $this->cache = $cache;
 
    }
 
@@ -245,7 +255,7 @@
 
    /**
     * resetCache function.
-    * 
+    *
     * @access public
     * @return void
     */
@@ -266,16 +276,16 @@
    protected function update($node, $value) {
 
      if(empty($node)) {
-     
+
        if(!is_array($value))
          throw new \Exception("You must provide an array when inserting data on tree root");
 
        $this->data = $this->mergeArrays($this->data, $value);
 
      } else {
-     
+
        $this->resolveNamespace($node, true, $value);
-       
+
      }
 
      return ($this->modified = true);
@@ -305,7 +315,7 @@
        $currentName .= ($depth>0 ? '.' : '').$name;
 
        // new node
-       if(!isset($current[$name])) 
+       if(!isset($current[$name]))
        {
          if($create===true) {
            $current[$name] = ($endReached) ? $insert : array();
@@ -316,10 +326,10 @@
          else {
            return null;
          }
-       } 
-       
+       }
+
        // existing node
-       else 
+       else
        {
          if($endReached) {
            // updating value
@@ -331,7 +341,7 @@
              } else {
                $current[$name] = $insert;
              }
-           } 
+           }
 
          }
        }
@@ -343,14 +353,14 @@
        }
 
      }
-     
+
      return $current;
 
    }
 
    /**
     * mergeArrays function.
-    * 
+    *
     * @access protected
     * @param mixed $arr1
     * @param mixed $arr2
@@ -359,7 +369,7 @@
    protected function mergeArrays($arr1, $arr2) {
 
      return array_replace_recursive($arr1, $arr2);
-     
+
    }
 
  }
