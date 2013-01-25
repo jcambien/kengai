@@ -32,7 +32,7 @@
        throw new \Exception("Unable to restore configuration cache file : validation failed");
 
      $array = include($this->getCacheFilename($manager));
-     
+
      return array('data'=>$array['data'], 'keys'=>$array['keys']);
 
    }
@@ -53,7 +53,8 @@
 
      // Minifying
      file_put_contents($cacheFile, php_strip_whitespace($cacheFile));
-     
+     chmod($cacheFile, 0777);
+
      return ($write !== false);
 
    }
@@ -96,15 +97,15 @@
 
    /**
     * getCacheFilename function.
-    * 
+    *
     * @access protected
     * @param mixed $manager
     * @return void
     */
    protected function getCacheFilename($manager) {
-     
+
      return $this->cacheDir.'/'.$manager->getCacheUniqueKey().".php";
-     
+
    }
 
  }
