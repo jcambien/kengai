@@ -1,25 +1,30 @@
-<?php
+<?php namespace Kengai\Event;
 
- namespace Kengai\Event;
- 
- use Symfony\Component\EventDispatcher\Event;
- use Kengai\SourceReader;
+use Symfony\Component\EventDispatcher\Event;
+use Kengai\SourceReader;
 
- class ResourceEvent extends Event {
-   
-   protected
-    $source;
-    
-   public function __construct(SourceReader $source) {
-   
-     $this->source = $source;
+class ResourceEvent extends Event
+{
+  /**
+   * Event fired when a resource was found modified
+   * while checking registered sources
+   */
+  const RESOURCE_MODIFIED = "resource.modified";
 
-   }
-   
-   public function getSource() {
-     
-     return $this->source;
-     
-   }
+  /**
+   * Event fired when a resource is being refreshed by Kengai manager
+   */
+  const RESOURCE_REFRESHING = "data.refreshing";
 
- }
+  protected $source;
+
+  public function __construct(SourceReader $source)
+  {
+    $this->source = $source;
+  }
+
+  public function getSource()
+  {
+    return $this->source;
+  }
+}

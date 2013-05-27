@@ -8,6 +8,7 @@ use Exception;
 class APC implements CacheManagerInterface
 {
   protected $dataTreeIdentifier;
+
   protected $keysListIdentifier;
 
   /**

@@ -1,22 +1,18 @@
-<?php
+<?php namespace Kengai\Exception;
 
- namespace Kengai\Exception;
- 
- use Exception;
- 
- class UndefinedNodeException extends Exception {
-   
-   /**
-    * __construct function.
-    * 
-    * @access public
-    * @param mixed $node
-    * @return void
-    */
-   public function __construct($node) {
-     
-     $this->message = "Undefined node : ".$node;
-     
-   }
-   
- }
+use Exception;
+
+class UndefinedNodeException extends Exception
+{
+  /**
+   * __construct function.
+   *
+   * @access public
+   * @param mixed $node
+   * @return void
+   */
+  public function __construct($node)
+  {
+    $this->message = "Undefined node : ".$node;
+  }
+}
