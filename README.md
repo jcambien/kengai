@@ -49,7 +49,7 @@ Here's is a configuration reading example :
 ```php
 $bar = $kengai->get('foo.bar');
 
-var_dump($var);
+var_dump($bar);
 ```
 
 
