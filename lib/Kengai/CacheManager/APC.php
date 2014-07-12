@@ -42,7 +42,10 @@ class APC implements CacheManagerInterface
 
     $array = apc_fetch(array($this->dataTreeIdentifier, $this->keysListIdentifier));
 
-    return ($data=$manager->getData() && $keys=$manager->getKeys());
+    return array(
+      'data' => $array[$this->dataTreeIdentifier],
+      'keys' => $array[$this->keysListIdentifier]
+    );
   }
 
   /**

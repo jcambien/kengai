@@ -18,16 +18,18 @@ class ConfigServiceProvider implements ServiceProviderInterface
         return null;
       }
 
-      if (!is_dir($app['config.cache_dir'])) {
-        throw new \Exception('Unable to find Kengai cache directory ('.$app['config.cache_dir'].')');
-      }
-
       if (extension_loaded('apc')) {
         $appName = isset($app['name']) ? $app['name'] : 'app';
         $data = $appName.'_config_data';
         $keys = $appName.'_config_keys';
 
         return new Kengai\CacheManager\APC($data, $keys);
+      }
+
+      if (empty($app['config.cache_dir'])) {
+        throw new \Exception('Kengai cache directory not set');
+      } elseif (!is_dir($app['config.cache_dir'])) {
+        throw new \Exception('Unable to find Kengai cache directory ('.$app['config.cache_dir'].')');
       }
 
       return new Kengai\Manager\FileSystem($app['config.cache_dir']);
