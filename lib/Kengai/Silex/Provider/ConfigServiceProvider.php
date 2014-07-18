@@ -11,7 +11,8 @@ class ConfigServiceProvider implements ServiceProviderInterface
    */
   public function register(Application $app)
   {
-    $app['config.cache_dir'] = '';
+    $app['config.cache_dir'] = isset($app['config.cache_dir']) ? $app['config.cache_dir'] : '';
+    $app['cache'] = isset($app['cache']) ? $app['cache'] : false;
 
     $app['config.cache'] = $app->share(function() use ($app) {
       if ($app['cache'] !== true || empty($app['config.cache_dir'])) {
@@ -32,7 +33,7 @@ class ConfigServiceProvider implements ServiceProviderInterface
         throw new \Exception('Unable to find Kengai cache directory ('.$app['config.cache_dir'].')');
       }
 
-      return new Kengai\Manager\FileSystem($app['config.cache_dir']);
+      return new Kengai\CacheManager\FileSystem($app['config.cache_dir']);
     });
 
     $app['config'] = $app->share(function() use ($app) {
